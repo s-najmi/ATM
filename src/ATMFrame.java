@@ -94,29 +94,34 @@ public class ATMFrame extends JFrame implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        long currentAmount = Long.parseLong(amountNumber.getText());
-        Transaction tr;
-        if (e.getSource() == deposit) {
-            tr =new Deposit(new Date(),232323,1010,currentAmount,db.account);
-            try {
-                tr.operate();
-                balance.setText(String.valueOf(db.account.getBalance()));
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-        }else if (e.getSource() == withdrawal){
-            tr =new Withdrawal(new Date(),232324,1010,currentAmount,db.account);
-            try {
-                tr.operate();
-                balance.setText(String.valueOf(db.account.getBalance()));
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-        }else{
-            Transaction[] transactions = db.getAccount().getTransactions();
-            List<Transaction> list = Arrays.asList(transactions);
-            FrmGrid gridTable = new FrmGrid(list);
-        }
+    public void actionPerformed(ActionEvent e){
+        long currentAmount = 0;
+       try {
+           if (e.getSource() != show){
+               if (amountNumber.getText().equals("")){
+                   throw new Exception("Insert Amount of transaction!");
+               } else if (Long.valueOf(amountNumber.getText())<=0){
+                   throw new Exception("Insert correct Amount of transaction!");
+               }else{
+                   currentAmount = Long.parseLong(amountNumber.getText());
+               }
+           }
+           Transaction tr;
+           if (e.getSource() == deposit) {
+               tr = new Deposit(new Date(), 232323, 1010, currentAmount, db.account);
+               tr.operate();
+               balance.setText(String.valueOf(db.account.getBalance()));
+           } else if (e.getSource() == withdrawal) {
+               tr = new Withdrawal(new Date(), 232324, 1010, currentAmount, db.account);
+               tr.operate();
+               balance.setText(String.valueOf(db.account.getBalance()));
+           } else {
+               Transaction[] transactions = db.getAccount().getTransactions();
+               List<Transaction> list = Arrays.asList(transactions);
+               FrmGrid gridTable = new FrmGrid(list);
+           }
+       }catch(Exception ex){
+           System.out.println(ex.getMessage());
+       }
     }
 }
